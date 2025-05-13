@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>카운터 버튼</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+    #counter {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    button {
+      font-size: 24px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="counter">0</div>
+  <button onclick="increaseCounter()">클릭!</button>
+
+  <script>
+    let count = 0;
+    function increaseCounter() {
+      count++;
+      document.getElementById('counter').textContent = count;
+    }
+  </script>
+</body>
+</html>
