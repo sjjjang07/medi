@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>췌장암 위험도 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 20px;
+        }
+        select, .checkbox-group {
+            margin-top: 5px;
+        }
+        .checkbox-group label {
+            font-weight: normal;
+            display: inline-block;
+            margin-right: 15px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+        }
+        #result {
+            margin-top: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>췌장암 위험도 계산기</h1>
+
+    <label>연령대</label>
+    <select id="age">
+        <option value="0">선택</option>
+        <option value="1">40대</option>
+        <option value="2">50대</option>
+        <option value="3">60대</option>
+        <option value="4">70대 이상</option>
+    </select>
+
+    <label>성별</label>
+    <select id="gender">
+        <option value="0">남성</option>
+        <option value="-1">여성</option>
+    </select>
+
+    <label>흡연 상태</label>
+    <select id="smoking" onchange="toggleSmokingAmount()">
+        <option value="0">흡연 경험 없음</option>
+        <option value="1">과거 흡연자</option>
+        <option value="2">현재 흡연자</option>
+    </select>
+
+    <div id="smokingAmountDiv" style="display:none">
+        <label>흡연량</label>
+        <select id="smokingAmount">
+            <option value="1">0.5갑 미만</option>
+            <option value="2">0.5~1갑</option>
+            <option value="3">1갑 이상</option>
+        </select>
+    </div>
+
+    <label>BMI 상태</label>
+    <select id="bmi">
+        <option value="0">정상</option>
+        <option value="1">과체중</option>
+        <option value="1">비만</option>
+    </select>
+
+    <label>당뇨 여부</label>
+    <div class="checkbox-group">
+        <label><input type="radio" name="diabetes" value="1"> 해당 됨</label>
+        <label><input type="radio" name="diabetes" value="0" checked> 해당 아님</label>
+    </div>
+
+    <label>담낭 절제술 여부</label>
+    <div class="checkbox-group">
+        <label><input type="radio" name="gallbladder" value="1"> 해당 됨</label>
+        <label><input type="radio" name="gallbladder" value="0" checked> 해당 아님</label>
+    </div>
+
+    <label>급성 췌장염 여부</label>
+    <div class="checkbox-group">
+        <label><input type="radio" name="acutePancreatitis" value="1"> 해당 됨</label>
+        <label><input type="radio" name="acutePancreatitis" value="0" checked> 해당 아님</label>
+    </div>
+
+    <label>만성 췌장염 여부</label>
+    <div class="checkbox-group">
+        <label><input type="radio" name="chronicPancreatitis" value="1"> 해당 됨</label>
+        <label><input type="radio" name="chronicPancreatitis" value="0" checked> 해당 아님</label>
+    </div>
+
+    <label>암 가족력 여부</label>
+    <div class="checkbox-group">
+        <label><input type="radio" name="cancerHistory" value="1"> 해당 됨</label>
+        <label><input type="radio" name="cancerHistory" value="0" checked> 해당 아님</label>
+    </div>
+
+    <button onclick="calculateRisk()">위험도 계산</button>
+
+    <div id="result"></div>
+
+    <script>
+        function toggleSmokingAmount() {
+            const smoking = document.getElementById("smoking").value;
+            document.getElementById("smokingAmountDiv").style.display = smoking == '2' ? 'block' : 'none';
+        }
+
+        function calculateRisk() {
+            let baseRisk = 0.003; // 0.3%
+            let riskScore = 0;
+
+            const age = parseInt(document.getElementById("age").value);
+            const gender = parseInt(document.getElementById("gender").value);
+            const smoking = parseInt(document.getElementById("smoking").value);
+            const smokingAmount = document.getElementById("smokingAmount").value;
+            const bmi = parseInt(document.getElementById("bmi").value);
+            const diabetes = parseInt(document.querySelector('input[name="diabetes"]:checked').value);
+            const gallbladder = parseInt(document.querySelector('input[name="gallbladder"]:checked').value);
+            const acutePancreatitis = parseInt(document.querySelector('input[name="acutePancreatitis"]:checked').value);
+            const chronicPancreatitis = parseInt(document.querySelector('input[name="chronicPancreatitis"]:checked').value);
+            const cancerHistory = parseInt(document.querySelector('input[name="cancerHistory"]:checked').value);
+
+            riskScore += age;
+            riskScore += gender;
+            if (smoking > 0) riskScore += smoking;
+            if (smoking == 2) riskScore += parseInt(smokingAmount);
+            riskScore += bmi;
+            riskScore += diabetes;
+            riskScore += gallbladder;
+            riskScore += acutePancreatitis;
+            riskScore += chronicPancreatitis;
+            riskScore += cancerHistory;
+
+            // 로지스틱 회귀 기반 확률 계산 (동일한 가중치 가정)
+            const probability = 1 / (1 + Math.exp(-(Math.log(baseRisk / (1 - baseRisk)) + riskScore)));
+            const percentage = (probability * 100).toFixed(2);
+
+            document.getElementById("result").innerText = `예상 췌장암 위험도: ${percentage}%`;
+        }
+    </script>
+</body>
+</html>
