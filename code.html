@@ -34,11 +34,11 @@
     </style>
 </head>
 <body>
-    <h1>췌장암 위험도 계산기222</h1>
+    <h1>췌장암 위험도 계산기</h1>
 
     <label>연령대</label>
     <select id="ageGroup">
-        <option value="">선택</option>
+        <option value="">60대 미만</option>
         <option value="60대 이상">60대 이상</option>
         <option value="70대 이상">70대 이상</option>
         <option value="80대 이상">80대 이상</option>
@@ -46,6 +46,14 @@
 
     <label>현재 흡연 여부</label>
     <input type="checkbox" id="smoking"> 흡연
+
+    <label>하루 흡연량</label>
+    <select id="smokingAmount">
+        <option value="">0갑</option>
+        <option value="0.5갑 미만">0.5갑 미만</option>
+        <option value="0.5~1갑">0.5~1갑</option>
+        <option value="1갑 이상">1갑 이상</option>
+    </select>
 
     <label>당뇨 진단 여부</label>
     <input type="checkbox" id="diabetes"> 당뇨 있음
@@ -66,14 +74,6 @@
 
     <label>고콜레스테롤 여부</label>
     <input type="checkbox" id="hyperlipidemia"> 고콜레스테롤 있음
-
-    <label>하루 흡연량</label>
-    <select id="smokingAmount">
-        <option value="">선택</option>
-        <option value="0.5갑 미만">0.5갑 미만</option>
-        <option value="0.5~1갑">0.5~1갑</option>
-        <option value="1갑 이상">1갑 이상</option>
-    </select>
 
     <button onclick="calculateRisk()">위험도 계산</button>
 
