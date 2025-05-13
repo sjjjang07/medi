@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>췌장암 위험도 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+            background: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        select, input[type="checkbox"] {
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>췌장암 위험도 계산기</h1>
+
+    <label>연령대</label>
+    <select id="ageGroup">
+        <option value="">선택</option>
+        <option value="60대 이상">60대 이상</option>
+        <option value="70대 이상">70대 이상</option>
+        <option value="80대 이상">80대 이상</option>
+    </select>
+
+    <label>현재 흡연 여부</label>
+    <input type="checkbox" id="smoking"> 흡연
+
+    <label>당뇨 진단 여부</label>
+    <input type="checkbox" id="diabetes"> 당뇨 있음
+
+    <label>BMI 상태</label>
+    <select id="bmiCategory">
+        <option value="">선택</option>
+        <option value="정상">정상</option>
+        <option value="과체중">과체중</option>
+        <option value="비만">비만</option>
+    </select>
+
+    <label>담낭 절제술 여부</label>
+    <input type="checkbox" id="gallbladderSurgery"> 수술 받음
+
+    <label>고혈압 여부</label>
+    <input type="checkbox" id="hypertension"> 고혈압 있음
+
+    <label>고콜레스테롤 여부</label>
+    <input type="checkbox" id="hyperlipidemia"> 고콜레스테롤 있음
+
+    <label>하루 흡연량</label>
+    <select id="smokingAmount">
+        <option value="">선택</option>
+        <option value="0.5갑 미만">0.5갑 미만</option>
+        <option value="0.5~1갑">0.5~1갑</option>
+        <option value="1갑 이상">1갑 이상</option>
+    </select>
+
+    <button onclick="calculateRisk()">위험도 계산</button>
+
+    <div id="result"></div>
+
+    <script>
+        const coefficients = {
+            "고령_60대": Math.log(6.86),
+            "고령_70대": Math.log(10.65),
+            "고령_80대": Math.log(12.93),
+            "흡연": Math.log(1.38),
+            "당뇨": Math.log(1.34),
+            "BMI_과체중": Math.log(1.05),
+            "BMI_비만": Math.log(1.13),
+            "담낭_절제술": Math.log(1.97),
+            "고혈압": Math.log(1.21),
+            "고콜레스테롤": Math.log(1.16),
+            "흡연량_0.5갑_미만": Math.log(1.31),
+            "흡연량_0.5_1갑": Math.log(1.39),
+            "흡연량_1갑_이상": Math.log(1.47)
+        };
+
+        function calculateRisk() {
+            let logit = 0;
+
+            const ageGroup = document.getElementById("ageGroup").value;
+            if (ageGroup === "60대 이상") logit += coefficients["고령_60대"];
+            else if (ageGroup === "70대 이상") logit += coefficients["고령_70대"];
+            else if (ageGroup === "80대 이상") logit += coefficients["고령_80대"];
+
+            if (document.getElementById("smoking").checked)
+                logit += coefficients["흡연"];
+
+            if (document.getElementById("diabetes").checked)
+                logit += coefficients["당뇨"];
+
+            const bmi = document.getElementById("bmiCategory").value;
+            if (bmi === "과체중") logit += coefficients["BMI_과체중"];
+            else if (bmi === "비만") logit += coefficients["BMI_비만"];
+
+            if (document.getElementById("gallbladderSurgery").checked)
+                logit += coefficients["담낭_절제술"];
+
+            if (document.getElementById("hypertension").checked)
+                logit += coefficients["고혈압"];
+
+            if (document.getElementById("hyperlipidemia").checked)
+                logit += coefficients["고콜레스테롤"];
+
+            const smokingAmount = document.getElementById("smokingAmount").value;
+            if (smokingAmount === "0.5갑 미만")
+                logit += coefficients["흡연량_0.5갑_미만"];
+            else if (smokingAmount === "0.5~1갑")
+                logit += coefficients["흡연량_0.5_1갑"];
+            else if (smokingAmount === "1갑 이상")
+                logit += coefficients["흡연량_1갑_이상"];
+
+            const probability = 1 / (1 + Math.exp(-logit));
+            document.getElementById("result").innerText = `예상 위험도: ${(probability * 100).toFixed(2)}%`;
+        }
+    </script>
+</body>
+</html>
